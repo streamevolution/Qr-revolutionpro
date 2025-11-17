@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Revolution Pro</title>
+
+    <script type="text/javascript">
+        window.STARTIO_APP_ID = "209850983";
+    </script>
+    <script type="text/javascript" src="https://cdn.start.io/sdk/main.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJ8ZzI/8GqN0B4I8B7P0W0g100A0Ywz22X8tM+D0l5fM0f6vJp88P8sR9zF8A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    
+    <style>
+        /* --- FUENTE GLOBAL (MÁS PRO) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            margin: 0; 
+            padding: 0;
+            background-color: #f8fafc; /* gris-50 */
+            font-family: 'Inter', sans-serif;
+            color: #1f2937; /* gris-800 */
+        }
+
+        /* --- NUEVA PALETA DE ACENTO (ÍNDIGO) --- */
+        .accent-btn {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+        }
+        .accent-btn:hover {
+            background-color: #4338ca; /* indigo-700 */
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px 0 rgba(79, 70, 229, 0.25);
+        }
+        .accent-btn:disabled {
+            background-color: #e0e7ff; /* indigo-100 */
+            color: #a5b4fc; /* indigo-300 */
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* --- ESTILOS DE FORMULARIO MEJORADOS --- */
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151; /* gris-700 */
+            font-size: 0.875rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db; /* gris-300 */
+            border-radius: 0.5rem;
+            color: #111827; /* gris-900 */
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #4f46e5; /* indigo-600 */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3); /* Ring de foco */
+        }
+        textarea.form-input {
+            min-height: 100px;
+        }
+
+        /* --- BOTONES DE TIPO MEJORADOS (CON ESTADO ACTIVO) --- */
+        .type-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            border: 2px solid #e5e7eb; /* gris-200 */
+            border-radius: 0.75rem; /* Más redondeado */
+            background-color: #ffffff;
+            color: #374151; /* gris-700 */
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .type-btn:hover {
+            border-color: #a5b4fc; /* indigo-300 */
+            background-color: #f5f3ff; /* indigo-50 */
+            color: #4f46e5; /* indigo-600 */
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        }
+        .type-btn i {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            color: #6366f1; /* indigo-500 */
+            transition: color 0.2s ease;
+        }
+        .type-btn:hover i {
+            color: #4f46e5; /* indigo-600 */
+        }
+        
+        .type-btn.active {
+            border-color: #4f46e5; /* indigo-600 */
+            background-color: #eef2ff; /* indigo-100 */
+            color: #4338ca; /* indigo-700 */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3); /* Ring */
+            transform: translateY(0);
+        }
+        .type-btn.active i {
+            color: #4f46e5; /* indigo-600 */
+        }
+
+        /* --- CONTENEDOR QR PROFESIONAL --- */
+        #qrcode-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background-color: #ffffff;
+            min-height: 280px;
+            min-width: 280px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            overflow: hidden; /* Para que el código de barras se ajuste */
+        }
+        #qrcode-container > canvas,
+        #qrcode-container > img {
+            padding: 16px;
+            border: 2px solid #e5e7eb; /* gris-200 */
+            border-radius: 0.5rem;
+            background-color: #fff;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        #barcode-canvas {
+            padding: 20px 10px; /* Más padding vertical para el texto */
+            border: none;
+            border-radius: 0.5rem;
+            background-color: #fff;
+            box-sizing: border-box;
+            width: 100%;
+            height: auto;
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slideInLeft {
+            animation: slideInLeft 0.5s ease-out forwards;
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slideInRight {
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+
+        @keyframes subtleFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .qr-form, .scan-view-inner, .animate-subtleFadeIn {
+            animation: subtleFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+
+        /* --- BOTONES SOCIALES CON IMAGEN Y RESPLANDOR --- */
+        .social-img-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px; 
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+        }
+
+        .social-img-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        .social-img-btn:hover {
+             transform: translateY(-3px);
+             box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+        }
+        .social-img-btn:hover img {
+            transform: scale(1.05);
+        }
+
+        .social-img-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
+            z-index: 1;
+        }
+
+        .social-img-btn:hover::before {
+            width: 150%;
+            height: 150%;
+            opacity: 0.6;
+        }
+
+        .social-img-btn[data-social="facebook"]::before { --glow-color: rgba(24, 119, 242, 0.4); }
+        .social-img-btn[data-social="instagram"]::before { --glow-color: rgba(225, 48, 108, 0.4); }
+        .social-img-btn[data-social="whatsapp"]::before { --glow-color: rgba(37, 211, 102, 0.4); }
+
+        /* --- NUEVOS ESTILOS PARA PESTAÑAS Y ESCÁNER --- */
+        
+        /* Botones de Pestaña */
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4b5563; /* gris-600 */
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        .tab-btn:hover {
+            color: #1f2937; /* gris-800 */
+        }
+        .tab-btn.active {
+            color: #4f46e5; /* indigo-600 */
+            border-bottom-color: #4f46e5; /* indigo-600 */
+        }
+        
+        /* Contenedor del Escáner */
+        #scan-video-container {
+            position: relative;
+            background-color: #000;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        #scan-video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* --- ESTILOS MODIFICADOS --- */
+        /* Nuevo 'viewfinder' cuadrado */
+        #scan-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            /* Define el tamaño del cuadrado */
+            width: 70%; /* 70% del ancho del contenedor */
+            height: 0;
+            padding-bottom: 70%; /* Mantiene el aspect ratio 1:1 (cuadrado) */
+
+            /* Borde blanco */
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 0.75rem;
+
+            /* Sombra masiva para oscurecer el exterior.
+               El 'overflow: hidden' del contenedor padre la recortará.
+            */
+            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
+            
+            animation: scan-pulse 2s infinite ease-in-out;
+        }
+
+        /* Animación de pulso para el nuevo 'viewfinder' */
+        @keyframes scan-pulse {
+            0% {
+                border-color: rgba(255, 255, 255, 0.7);
+            }
+            50% {
+                border-color: rgba(255, 255, 255, 1);
+            }
+            100% {
+                border-color: rgba(255, 255, 255, 0.7);
+            }
+        }
+        /* --- FIN DE ESTILOS MODIFICADOS --- */
+        
+        /* Botón para subir archivo */
+        #file-scan-label {
+            display: block;
+            border: 2px dashed #c7d2fe; /* indigo-200 */
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f5f3ff; /* indigo-50 */
+            color: #4f46e5; /* indigo-600 */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #file-scan-label:hover {
+            border-color: #4f46e5; /* indigo-600 */
+            background-color: #eef2ff; /* indigo-100 */
+        }
+        #file-scan-label i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        /* ESTILO PARA MENSAJE DE ERROR DE CÁMARA */
+        #camera-error {
+            font-weight: 600;
+            background-color: #fee2e2; /* red-100 */
+            border: 1px solid #ef4444; /* red-500 */
+            color: #b91c1c; /* red-700 */
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-8">
+
+        <div class="mb-6 border-b border-gray-200 bg-white shadow-sm rounded-lg overflow-hidden">
+            <nav class="flex justify-center -mb-px">
+                <button id="tab-generate-btn" class="tab-btn active">
+                    <i class="fa-solid fa-magic mr-2"></i> Generar
+                </button>
+                <button id="tab-scan-btn" class="tab-btn">
+                    <i class="fa-solid fa-camera mr-2"></i> Escanear
+                </button>
+            </nav>
+        </div>
+
+        <div id="generate-view">
+            <div class="flex flex-col md:flex-row md:min-h-screen bg-white rounded-xl shadow-xl overflow-hidden">
+                <div class="w-full md:w-1/2 lg:w-3/5 p-6 sm:p-10 md:p-12 md:h-screen md:overflow-y-auto">
+                    <header class="mb-10 pb-6 border-b border-gray-200">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2 tracking-tight">
+                            <i class="fa-solid fa-qrcode text-indigo-600 mr-2"></i>
+                            QR Revolution <span class="font-light text-gray-500">Pro</span>
+                        </h1>
+                        <p class="text-lg text-gray-500">Crea códigos profesionales con un flujo de trabajo superior.</p>
+                    </header>
+
+                    <div id="step-1-types" class="space-y-6">
+                        <h2 class="text-2xl font-bold text-gray-700">Paso 1: Elige el tipo</h2>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+                            <button class="type-btn" data-type="text" data-title="Texto Simple">
+                                <i class="fa-solid fa-font"></i>
+                                <span>Texto</span>
+                            </button>
+                            <button class="type-btn" data-type="url" data-title="Enlace URL">
+                                <i class="fa-solid fa-link"></i>
+                                <span>URL</span>
+                            </button>
+                            <button class="type-btn" data-type="phone" data-title="Número de Teléfono">
+                                <i class="fa-solid fa-phone"></i>
+                                <span>Teléfono</span>
+                            </button>
+                            <button class="type-btn" data-type="email" data-title="Correo Electrónico">
+                                <i class="fa-solid fa-at"></i>
+                                <span>Email</span>
+                            </button>
+                            <button class="type-btn" data-type="vcard" data-title="Contacto (vCard)">
+                                <i class="fa-solid fa-address-card"></i>
+                                <span>vCard</span>
+                            </button>
+                            <button class="type-btn" data-type="sms" data-title="Mensaje SMS">
+                                <i class="fa-solid fa-comment-sms"></i>
+                                <span>SMS</span>
+                            </button>
+                            <button class="type-btn" data-type="geo" data-title="Geolocalización">
+                                <i class="fa-solid fa-map-marker-alt"></i>
+                                <span>Geo</span>
+                            </button>
+                            <button class="type-btn" data-type="clipboard" data-title="Desde Portapapeles">
+                                <i class="fa-solid fa-clipboard"></i>
+                                <span>Portapapeles</span>
+                            </button>
+                            <button class="type-btn" data-type="barcode" data-title="Número de Cód. Barras">
+                                <i class="fa-solid fa-barcode"></i>
+                                <span>Cód. Barras</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="step-2-wrapper" class="hidden mt-10 space-y-6">
+                        <h2 id="step-2-title" class="text-2xl font-bold text-gray-700 border-t pt-10">Paso 2: Define el contenido</h2>
+                        <div id="form-inputs" class="space-y-4">
+                            <div id="form-text" class="qr-form hidden space-y-2"><label for="text-input" class="form-label">Escribe tu mensaje:</label><textarea id="text-input" rows="4" class="form-input" placeholder="Hola, este es un QR de prueba..."></textarea></div>
+                            <div id="form-url" class="qr-form hidden space-y-2"><label for="url-input" class="form-label">Pega la URL (incluye https://):</label><input type="text" id="url-input" class="form-input" placeholder="https://tu-link.com"></div>
+                            <div id="form-phone" class="qr-form hidden space-y-2"><label for="phone-input" class="form-label">Número de teléfono (con cód. país):</label><input type="tel" id="phone-input" class="form-input" placeholder="+521234567890"></div>
+                            <div id="form-email" class="qr-form hidden space-y-4"><div><label for="email-to" class="form-label">Para (Email):</label><input type="email" id="email-to" class="form-input" placeholder="destinatario@ejemplo.com"></div><div><label for="email-subject" class="form-label">Asunto:</label><input type="text" id="email-subject" class="form-input" placeholder="Asunto del correo"></div><div><label for="email-body" class="form-label">Mensaje:</label><textarea id="email-body" rows="3" class="form-input" placeholder="Cuerpo del mensaje..."></textarea></div></div>
+                            <div id="form-vcard" class="qr-form hidden grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="vcard-name" class="form-label">Nombre:</label><input type="text" id="vcard-name" class="form-input" placeholder="Juan"></div><div><label for="vcard-lastname" class="form-label">Apellido:</label><input type="text" id="vcard-lastname" class="form-input" placeholder="Pérez"></div><div class="md:col-span-2"><label for="vcard-phone" class="form-label">Teléfono:</label><input type="tel" id="vcard-phone" class="form-input" placeholder="+521234567890"></div><div class="md:col-span-2"><label for="vcard-email" class="form-label">Email:</label><input type="email" id="vcard-email" class="form-input" placeholder="juan.perez@ejemplo.com"></div></div>
+                            <div id="form-sms" class="qr-form hidden space-y-4"><div><label for="sms-phone" class="form-label">Número de teléfono:</label><input type="tel" id="sms-phone" class="form-input" placeholder="+521234567890"></div><div><label for="sms-message" class="form-label">Mensaje:</label><textarea id="sms-message" rows="3" class="form-input" placeholder="Este es mi mensaje..."></textarea></div></div>
+                            <div id="form-geo" class="qr-form hidden grid grid-cols-2 gap-4"><div><label for="geo-lat" class="form-label">Latitud:</label><input type="text" id="geo-lat" class="form-input" placeholder="19.4326"></div><div><label for="geo-lng" class="form-label">Longitud:</label><input type="text" id="geo-lng" class="form-input" placeholder="-99.1332"></div></div>
+                            <div id="form-clipboard" class="qr-form hidden space-y-2"><label for="clipboard-input" class="form-label">Contenido del Portapapeles:</label><textarea id="clipboard-input" rows="4" class="form-input" placeholder="Se pegará el contenido aquí..."></textarea></div>
+                            <div id="form-barcode" class="qr-form hidden space-y-2"><label for="barcode-input" class="form-label">Número del Código de Barras:</label><input type="text" id="barcode-input" class="form-input" placeholder="Ingresa el número (ej: 841234567890)"></div>
+                        </div>
+                        
+                        <div class="mt-8 space-y-4">
+                            <button id="convertBtn" class="w-full accent-btn font-bold py-4 px-4 rounded-lg text-lg shadow-lg transition duration-300">Paso 3: Generar Código</button>
+                            <div id="alert-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert"><p class="font-bold">⚠️ ¡Atención!</p><p id="alert-text">Ingresa contenido válido.</p></div>
+                            <div id="success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg" role="alert"><p class="font-bold">✅ ¡Éxito!</p><p id="success-text"></p></div>
+                        </div>
+                    </div>
+
+                    <footer class="mt-16 pt-8 border-t border-gray-200 hidden md:block">
+                        <div class="text-center">
+                            <p class="text-sm font-semibold text-gray-600 mb-4">Síguenos en Redes Sociales:</p>
+                            <div class="flex justify-center space-x-4"><a href="https://www.facebook.com/tupaginaoficial" target="_blank" class="social-img-btn" data-social="facebook" title="Síguenos en Facebook"><img src="https://i.postimg.cc/CKkGTmjJ/Logo-de-Facebook.png" alt="Facebook Logo"></a><a href="https://www.instagram.com/tuperfil/" target="_blank" class="social-img-btn" data-social="instagram" title="Síguenos en Instagram"><img src="https://i.postimg.cc/hvyxbwqy/Instagram-logo-2022-svg.png" alt="Instagram Logo"></a><a href="https://wa.me/tunumerodetelefono" target="_blank" class="social-img-btn" data-social="whatsapp" title="Contáctanos por WhatsApp"><img src="https://i.postimg.cc/dQ48Y7T5/images-(2).png" alt="WhatsApp Logo"></a></div>
+                        </div>
+                        <p class="text-gray-500 text-center mt-8 text-sm">&copy; 2025 QR Revolution Pro | Minimalist Design</p>
+                    </footer>
+                </div>
+
+                <div class="w-full md:w-1/2 lg:w-2/5 bg-gray-100 p-6 sm:p-10 md:p-12 flex flex-col items-center justify-center md:h-screen sticky top-0">
+                    <div id="qrcode-wrapper" class="w-full max-w-sm mx-auto flex flex-col items-center text-center space-y-6">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-2">Vista Previa</h2>
+                        <div id="loading-message" class="hidden flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-inner" style="min-width: 280px; min-height: 280px;"><svg class="animate-spin h-10 w-10 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><p class="mt-4 text-indigo-700 font-medium text-lg">Generando...</p></div>
+                        <div id="qrcode-container"><p class="text-gray-500 text-lg font-medium p-10">Tu código aparecerá aquí.</p></div>
+                        <button id="saveBtn" disabled class="w-full mt-6 accent-btn font-bold py-4 px-4 rounded-lg text-lg shadow-lg transition duration-300 opacity-0 -translate-y-2"><i class="fa-solid fa-download mr-2"></i>Guardar PNG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="scan-view" class="hidden">
+            <div class="scan-view-inner bg-white rounded-xl shadow-xl p-6 sm:p-10 md:p-12 max-w-2xl mx-auto">
+                <h2 class="text-3xl font-extrabold text-gray-800 mb-8 pb-4 border-b border-gray-200">Escanear Código</h2>
+
+                <div class="space-y-8">
+
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">1. Escanear con Cámara</h3>
+                        <div id="scan-video-container" class="mb-4 hidden">
+                            <video id="scan-video" playsinline></video>
+                            <div id="scan-overlay"></div> 
+                        </div>
+                        <div id="scan-placeholder" class="text-center p-8 bg-gray-900 text-gray-400 rounded-lg">
+                            <i class="fa-solid fa-video-slash text-4xl mb-4"></i>
+                            <p>La cámara está apagada</p>
+                        </div>
+                        
+                        <p id="camera-error" class="text-sm mt-4 hidden"></p>
+                        
+                        <div class="flex gap-4 mt-4">
+                            <button id="camera-scan-btn" class="w-full accent-btn font-bold py-3 px-4 rounded-lg">
+                                <i class="fa-solid fa-camera-retro mr-2"></i> Escanear
+                            </button>
+                            <button id="camera-stop-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hidden">
+                                <i class="fa-solid fa-stop mr-2"></i> Detener
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">2. Subir y Escanear Imagen</h3>
+                        <label for="file-scan-input" id="file-scan-label">
+                            <i class="fa-solid fa-upload"></i>
+                            <span>Haz clic para seleccionar una imagen</span>
+                        </label>
+                        <input type="file" id="file-scan-input" accept="image/*" class="hidden">
+                        <canvas id="file-scan-canvas" class="hidden"></canvas>
+                    </div>
+
+                    <div class="hidden"> 
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">Resultado del Escaneo</h3>
+                        <textarea id="scan-result-text" class="form-input" rows="4" placeholder="El contenido del código aparecerá aquí..." readonly></textarea>
+                        <div id="scan-result-actions" class="flex gap-4 mt-4 hidden">
+                            <button id="scan-copy-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">
+                                <i class="fa-solid fa-copy mr-2"></i> Copiar
+                            </button>
+                            <a id="scan-open-link-btn" href="#" target="_blank" class="w-full accent-btn font-bold py-2 px-4 rounded-lg text-center hidden">
+                                <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Abrir Enlace
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="mt-16 pt-8 border-t border-gray-200 hidden md:block">
+                    <div class="text-center">
+                        <p class="text-sm font-semibold text-gray-600 mb-4">Síguenos en Redes Sociales:</p>
+                        <div class="flex justify-center space-x-4"><a href="https://www.facebook.com/tupaginaoficial" target="_blank" class="social-img-btn" data-social="facebook" title="Síguenos en Facebook"><img src="https://i.postimg.cc/CKkGTmjJ/Logo-de-Facebook.png" alt="Facebook Logo"></a><a href="https://www.instagram.com/tuperfil/" target="_blank" class="social-img-btn" data-social="instagram" title="Síguenos en Instagram"><img src="https://i.postimg.cc/hvyxbwqy/Instagram-logo-2022-svg.png" alt="Instagram Logo"></a><a href="https://wa.me/tunumerodetelefono" target="_blank" class="social-img-btn" data-social="whatsapp" title="Contáctanos por WhatsApp"><img src="https://i.postimg.cc/dQ48Y7T5/images-(2).png" alt="WhatsApp Logo"></a></div>
+                    </div>
+                    <p class="text-gray-500 text-center mt-8 text-sm">&copy; 2025 QR Revolution Pro | Minimalist Design</p>
+                </footer>
+                </div>
+        </div>
+
+        <div id="fullscreen-result-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75">
+            <div id="fullscreen-result-content" class="relative bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl mx-auto space-y-4 animate-subtleFadeIn">
+                <button id="fullscreen-result-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+                    <i class="fa-solid fa-times fa-2x"></i>
+                </button>
+                
+                <h2 class="text-2xl font-bold text-gray-800">Resultado del Escaneo</h2>
+                
+                <p id="fullscreen-result-type" class="text-lg font-semibold text-indigo-600 -mt-2 mb-2"></p>
+                <textarea id="fullscreen-result-text" class="form-input" rows="8" placeholder="El contenido del código aparecerá aquí..." readonly></textarea>
+                
+                <div id="fullscreen-result-actions" class="flex flex-col sm:flex-row gap-4">
+                    <button id="fullscreen-copy-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg">
+                        <i class="fa-solid fa-copy mr-2"></i> Copiar
+                    </button>
+                    <a id="fullscreen-open-link-btn" href="#" target="_blank" class="w-full accent-btn font-bold py-3 px-4 rounded-lg text-center hidden">
+                        <i class="fa-solid fa-arrow-up-right-from-square mr-2"></i> Abrir Enlace
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <footer id="mobile-footer" class="p-6 sm:p-10 bg-white border-t border-gray-200 md:hidden">
+        <div class="text-center">
+            <p class="text-sm font-semibold text-gray-600 mb-4">Síguenos en Redes Sociales:</p>
+            <div class="flex justify-center space-x-4"><a href="https://www.facebook.com/tupaginaoficial" target="_blank" class="social-img-btn" data-social="facebook" title="Síguenos en Facebook"><img src="https://i.postimg.cc/CKkGTmjJ/Logo-de-Facebook.png" alt="Facebook Logo"></a><a href="https://www.instagram.com/tuperfil/" target="_blank" class="social-img-btn" data-social="instagram" title="Síguenos en Instagram"><img src="https://i.postimg.cc/hvyxbwqy/Instagram-logo-2022-svg.png" alt="Instagram Logo"></a><a href="https://wa.me/tunumerodetelefono" target="_blank" class="social-img-btn" data-social="whatsapp" title="Contáctanos por WhatsApp"><img src="https://i.postimg.cc/dQ48Y7T5/images-(2).png" alt="WhatsApp Logo"></a></div>
+        </div>
+        <p class="text-gray-500 text-center mt-8 text-sm">&copy; 2025 QR Revolution Pro | Minimalist Design</p>
+    </footer>
+    
+    <script>
+        // --- SCRIPT PARA LA PESTAÑA "GENERAR" ---
+        (function() {
+            // (El script "Generar" permanece idéntico hasta el listener del botón)
+            const qrcodeContainer = document.getElementById('qrcode-container');
+            const convertBtn = document.getElementById('convertBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const alertMessage = document.getElementById('alert-message');
+            const alertText = document.getElementById('alert-text');
+            const successMessage = document.getElementById('success-message');
+            const successText = document.getElementById('success-text');
+            const loadingMessage = document.getElementById('loading-message');
+            const step1Types = document.getElementById('step-1-types');
+            const step2Wrapper = document.getElementById('step-2-wrapper');
+            const step2Title = document.getElementById('step-2-title');
+            
+            let currentDataURL = null;
+            let activeFormType = null;
+
+            function updateSaveButton(enabled) {
+                saveBtn.disabled = !enabled;
+                if (enabled) {
+                    saveBtn.classList.remove('opacity-0', '-translate-y-2', 'accent-btn:disabled');
+                    saveBtn.classList.add('opacity-100', 'translate-y-0');
+                } else {
+                    saveBtn.classList.remove('opacity-100', 'translate-y-0');
+                    saveBtn.classList.add('opacity-0', '-translate-y-2', 'accent-btn:disabled');
+                }
+            }
+            
+            function resetQrView() {
+                updateSaveButton(false);
+                currentDataURL = null;
+                qrcodeContainer.classList.remove('hidden');
+                loadingMessage.classList.add('hidden');
+                qrcodeContainer.innerHTML = '<p class="text-gray-500 text-lg font-medium p-10">Tu código aparecerá aquí.</p>';
+            }
+
+            function hideAlerts() {
+                alertMessage.classList.add('hidden');
+                successMessage.classList.add('hidden');
+            }
+
+            async function showForm(type, title, clickedButton) {
+                activeFormType = type;
+                hideAlerts();
+                resetQrView(); 
+                
+                document.querySelectorAll('.type-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                clickedButton.classList.add('active');
+
+                document.querySelectorAll('.qr-form').forEach(form => {
+                    form.classList.add('hidden');
+                });
+
+                if (type === 'clipboard') {
+                    try {
+                        const text = await navigator.clipboard.readText();
+                        document.getElementById('clipboard-input').value = text;
+                    } catch (err) {
+                        console.error('Error al leer el portapapeles: ', err);
+                        alertText.textContent = 'Error al leer el portapapeles. Asegúrate de dar permiso.';
+                        alertMessage.classList.remove('hidden');
+                        return;
+                    }
+                }
+                
+                const formToShow = document.getElementById(`form-${type}`);
+                if (formToShow) {
+                    formToShow.classList.remove('hidden');
+                }
+                
+                step2Title.textContent = `Paso 2: Define el contenido para "${title}"`;
+                step2Wrapper.classList.remove('hidden');
+
+                if (type === 'barcode') {
+                    convertBtn.textContent = 'Paso 3: Generar Código de Barras';
+                } else {
+                    convertBtn.textContent = 'Paso 3: Generar Código QR';
+                }
+            }
+
+            function getDataToEncode() {
+                let data = '';
+                let isValid = true;
+                
+                try {
+                    switch (activeFormType) {
+                        case 'text': case 'clipboard': case 'barcode':
+                            data = document.getElementById(`${activeFormType}-input`).value;
+                            break;
+                        case 'url':
+                            data = document.getElementById('url-input').value;
+                            if (data && !data.startsWith('http://') && !data.startsWith('https://')) { data = 'https://' + data; }
+                            break;
+                        case 'phone':
+                            const phone = document.getElementById('phone-input').value;
+                            if (!phone) { isValid = false; break; }
+                            data = `tel:${phone}`;
+                            break;
+                        case 'sms':
+                            const smsPhone = document.getElementById('sms-phone').value;
+                            const smsMsg = document.getElementById('sms-message').value;
+                            if (!smsPhone) { isValid = false; break; }
+                            data = `smsto:${smsPhone}:${smsMsg}`;
+                            break;
+                        case 'email':
+                            const to = document.getElementById('email-to').value;
+                            const subject = document.getElementById('email-subject').value;
+                            const body = document.getElementById('email-body').value;
+                            if (!to) { isValid = false; break; }
+                            data = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                            break;
+                        case 'geo':
+                            const lat = document.getElementById('geo-lat').value;
+                            const lng = document.getElementById('geo-lng').value;
+                            if (!lat || !lng) { isValid = false; break; }
+                            data = `geo:${lat},${lng}`;
+                            break;
+                        case 'vcard':
+                            const name = document.getElementById('vcard-name').value;
+                            const lastname = document.getElementById('vcard-lastname').value;
+                            const vPhone = document.getElementById('vcard-phone').value;
+                            const vEmail = document.getElementById('vcard-email').value;
+                            if (!name && !lastname && !vPhone && !vEmail) { isValid = false; break; }
+                            data = `BEGIN:VCARD\nVERSION:3.0\nN:${lastname};${name}\nFN:${name} ${lastname}\nTEL;TYPE=CELL:${vPhone}\nEMAIL:${vEmail}\nEND:VCARD`;
+                            break;
+                    }
+                } catch (e) {
+                    console.error("Error al formatear datos: ", e);
+                    isValid = false;
+                }
+                
+                if (isValid && (data === null || data.trim() === "")) { isValid = false; }
+                return { isValid, data };
+            }
+
+            step1Types.addEventListener('click', (e) => {
+                const btn = e.target.closest('.type-btn');
+                if (!btn) return;
+                const type = btn.dataset.type;
+                const title = btn.dataset.title;
+                showForm(type, title, btn);
+            });
+
+            // --- LISTENER MODIFICADO ---
+            convertBtn.addEventListener('click', () => {
+                hideAlerts();
+                resetQrView(); 
+
+                const { isValid, data } = getDataToEncode();
+                if (!isValid) {
+                    alertText.textContent = '¡Atención! Ingresa contenido válido para el tipo seleccionado.';
+                    alertMessage.classList.remove('hidden');
+                    return;
+                }
+
+                qrcodeContainer.classList.add('hidden');
+                loadingMessage.classList.remove('hidden'); 
+                
+                if (activeFormType === 'barcode') {
+                    // --- 1. GENERAR CÓDIGO DE BARRAS ---
+                    setTimeout(() => {
+                        try {
+                            qrcodeContainer.innerHTML = ''; 
+                            const canvasElement = document.createElement('canvas');
+                            canvasElement.id = 'barcode-canvas';
+                            qrcodeContainer.appendChild(canvasElement);
+
+                            JsBarcode(canvasElement, data, {
+                                format: "CODE128",
+                                displayValue: true,
+                                text: data,
+                                fontSize: 18,
+                                margin: 10,
+                                background: "#ffffff",
+                                valid: function(isValid) {
+                                    if (!isValid) { throw new Error("Datos de código de barras no válidos."); }
+                                }
+                            });
+                            currentDataURL = canvasElement.toDataURL('image/png');
+                            
+                            loadingMessage.classList.add('hidden'); 
+                            qrcodeContainer.classList.remove('hidden');
+                            successText.textContent = 'Código de barras generado correctamente.';
+                            successMessage.classList.remove('hidden');
+                            updateSaveButton(true); 
+
+                            // --- DISPARADOR DE ANUNCIO AÑADIDO ---
+                            if (window.triggerAd) {
+                                console.log("Disparando anuncio por generación de Cód. Barras");
+                                window.triggerAd();
+                            }
+                            // --- FIN DE DISPARADOR ---
+
+                        } catch (e) {
+                            console.error("Error al generar el Código de Barras:", e);
+                            qrcodeContainer.innerHTML = '<p class="text-red-500 font-semibold p-10">Error. Datos no válidos para Cód. Barras (ej: 12345678).</p>';
+                            loadingMessage.classList.add('hidden');
+                            qrcodeContainer.classList.remove('hidden');
+                            updateSaveButton(false);
+                        }
+                    }, 600);
+                } else {
+                    // --- 2. GENERAR CÓDIGO QR (Lógica original) ---
+                    setTimeout(() => {
+                        try {
+                            qrcodeContainer.innerHTML = '';
+                            new QRCode(qrcodeContainer, {
+                                text: data, width: 256, height: 256,
+                                colorDark : "#111827", colorLight : "#ffffff",
+                                correctLevel : QRCode.CorrectLevel.H 
+                            });
+
+                            const canvas = qrcodeContainer.querySelector('canvas');
+                            const img = qrcodeContainer.querySelector('img');
+                            if (canvas) {
+                                currentDataURL = canvas.toDataURL('image/png');
+                            } else if (img) {
+                                const canvasTemp = document.createElement('canvas');
+                                const ctx = canvasTemp.getContext('2d');
+                                canvasTemp.width = img.width; canvasTemp.height = img.height;
+                                ctx.drawImage(img, 0, 0);
+                                currentDataURL = canvasTemp.toDataURL('image/png');
+                            }
+                            
+                            loadingMessage.classList.add('hidden'); 
+                            qrcodeContainer.classList.remove('hidden');
+                            successText.textContent = 'Código QR generado correctamente.';
+                            successMessage.classList.remove('hidden');
+                            updateSaveButton(true); 
+
+                            // --- DISPARADOR DE ANUNCIO AÑADIDO ---
+                            if (window.triggerAd) {
+                                console.log("Disparando anuncio por generación de QR");
+                                window.triggerAd();
+                            }
+                            // --- FIN DE DISPARADOR ---
+
+                        } catch (e) {
+                            console.error("Error al generar el Código QR:", e);
+                            qrcodeContainer.innerHTML = '<p class="text-red-500 font-semibold p-10">Error al generar. El contenido puede ser demasiado largo.</p>';
+                            loadingMessage.classList.add('hidden');
+                            qrcodeContainer.classList.remove('hidden');
+                            updateSaveButton(false);
+                        }
+                    }, 600); 
+                }
+            });
+            // --- FIN DE LISTENER MODIFICADO ---
+
+            saveBtn.addEventListener('click', () => {
+                if (!currentDataURL) {
+                    alertText.textContent = 'Primero debes generar un Código válido.';
+                    alertMessage.classList.remove('hidden');
+                    return;
+                }
+                const link = document.createElement('a');
+                link.href = currentDataURL;
+                link.download = `QR-RevolutionPro-${activeFormType || 'code'}.png`; 
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                hideAlerts();
+                successText.textContent = 'Archivo PNG descargado exitosamente.';
+                successMessage.classList.remove('hidden');
+            });
+        })();
+        
+        // --- SCRIPT PARA PESTAÑAS Y PESTAÑA "ESCANEAR" (MODIFICADO) ---
+        (function() {
+            // (Todo el script de "Escanear" permanece idéntico)
+            const tabGenerateBtn = document.getElementById('tab-generate-btn');
+            const tabScanBtn = document.getElementById('tab-scan-btn');
+            const generateView = document.getElementById('generate-view');
+            const scanView = document.getElementById('scan-view');
+            const mobileFooter = document.getElementById('mobile-footer');
+            const fileScanInput = document.getElementById('file-scan-input');
+            const fileScanCanvas = document.getElementById('file-scan-canvas');
+            const fileScanCtx = fileScanCanvas.getContext('2d');
+            const cameraScanBtn = document.getElementById('camera-scan-btn');
+            const cameraStopBtn = document.getElementById('camera-stop-btn');
+            const videoContainer = document.getElementById('scan-video-container');
+            const video = document.getElementById('scan-video');
+            const scanPlaceholder = document.getElementById('scan-placeholder');
+            const cameraError = document.getElementById('camera-error');
+            const fullscreenResultOverlay = document.getElementById('fullscreen-result-overlay');
+            const fullscreenResultType = document.getElementById('fullscreen-result-type');
+            const fullscreenResultText = document.getElementById('fullscreen-result-text');
+            const fullscreenResultActions = document.getElementById('fullscreen-result-actions');
+            const fullscreenCopyBtn = document.getElementById('fullscreen-copy-btn');
+            const fullscreenOpenLinkBtn = document.getElementById('fullscreen-open-link-btn');
+            const fullscreenResultCloseBtn = document.getElementById('fullscreen-result-close-btn');
+
+            let stream = null;
+            let animationFrameId = null;
+
+            tabGenerateBtn.addEventListener('click', () => {
+                tabGenerateBtn.classList.add('active');
+                tabScanBtn.classList.remove('active');
+                generateView.classList.remove('hidden');
+                scanView.classList.add('hidden');
+                if(mobileFooter) mobileFooter.classList.remove('hidden');
+                stopCamera(); 
+            });
+            
+            // --- INICIO DE MODIFICACIÓN: JS DE PESTAÑAS ---
+            tabScanBtn.addEventListener('click', () => {
+                tabScanBtn.classList.add('active');
+                tabGenerateBtn.classList.remove('active');
+                scanView.classList.remove('hidden');
+                generateView.classList.add('hidden');
+                if(mobileFooter) mobileFooter.classList.remove('hidden'); // MODIFICADO: Mostrar footer en escaner
+            });
+            // --- FIN DE MODIFICACIÓN ---
+
+            function showCameraError(message) {
+                cameraError.textContent = `❌ ${message}`;
+                cameraError.classList.remove('hidden');
+            }
+
+            function detectQrType(data) {
+                if (!data) {
+                    return { type: 'Error', data: '' };
+                }
+                if (data.startsWith('BEGIN:VCARD')) {
+                    return { type: 'Contacto (vCard)', data: data };
+                }
+                if (data.startsWith('http://') || data.startsWith('https://')) {
+                    return { type: 'Enlace URL', data: data };
+                }
+                if (data.startsWith('www.')) {
+                    return { type: 'Enlace URL', data: data };
+                }
+                if (data.startsWith('mailto:')) {
+                    return { type: 'Correo Electrónico', data: data };
+                }
+                if (data.startsWith('tel:')) {
+                    return { type: 'Teléfono', data: data };
+                }
+                if (data.startsWith('smsto:')) {
+                    return { type: 'Mensaje SMS', data: data };
+                }
+                if (data.startsWith('geo:')) {
+                    return { type: 'Geolocalización', data: data };
+                }
+                return { type: 'Texto Simple', data: data };
+            }
+
+            function updateResult(data) {
+                const result = detectQrType(data);
+                if (!data) {
+                    fullscreenResultType.textContent = 'Error';
+                    fullscreenResultText.value = "No se pudo leer el código. Intenta con otra imagen o ángulo.";
+                    fullscreenResultActions.classList.add('hidden');
+                } else {
+                    fullscreenResultType.textContent = result.type;
+                    fullscreenResultText.value = result.data;
+                    fullscreenResultActions.classList.remove('hidden');
+                    fullscreenCopyBtn.textContent = 'Copiar';
+                    fullscreenOpenLinkBtn.classList.add('hidden');
+                    if (result.type === 'Enlace URL') {
+                        fullscreenOpenLinkBtn.classList.remove('hidden');
+                        fullscreenOpenLinkBtn.href = result.data.startsWith('www.') ? 'https://' + result.data : result.data;
+                    }
+                }
+                fullscreenResultOverlay.classList.remove('hidden');
+            }
+            
+            fileScanInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const MAX_DIMENSION = 800;
+                        let newWidth, newHeight;
+                        if (img.width > img.height) {
+                            newWidth = MAX_DIMENSION;
+                            newHeight = (img.height * MAX_DIMENSION) / img.width;
+                        } else {
+                            newHeight = MAX_DIMENSION;
+                            newWidth = (img.width * MAX_DIMENSION) / img.height;
+                        }
+                        fileScanCanvas.width = newWidth;
+                        fileScanCanvas.height = newHeight;
+                        fileScanCtx.drawImage(img, 0, 0, newWidth, newHeight);
+                        try {
+                            const imageData = fileScanCtx.getImageData(0, 0, newWidth, newHeight);
+                            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts: "dontInvert",
+                            });
+                            if (code) {
+                                updateResult(code.data);
+                            } else {
+                                updateResult(null);
+                            }
+                        } catch (err) {
+                            console.error("Error al procesar imagen: ", err);
+                            updateResult(null);
+                        }
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+                e.target.value = null;
+            });
+
+            cameraScanBtn.addEventListener('click', startCamera);
+            cameraStopBtn.addEventListener('click', stopCamera);
+
+            async function startCamera() {
+                cameraError.classList.add('hidden');
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showCameraError("Tu navegador no soporta el acceso a la cámara. Prueba con Chrome o Firefox.");
+                    return;
+                }
+                if (!window.isSecureContext) {
+                    showCameraError("La función de cámara solo está permitida en sitios seguros (https://) o en localhost. Esta es una regla del navegador para proteger tu privacidad.");
+                    return;
+                }
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: "environment" }
+                    });
+                    video.srcObject = stream;
+                    video.onloadedmetadata = () => {
+                        video.play();
+                        videoContainer.classList.remove('hidden');
+                        scanPlaceholder.classList.add('hidden');
+                        cameraScanBtn.classList.add('hidden');
+                        cameraStopBtn.classList.remove('hidden');
+                        animationFrameId = requestAnimationFrame(tick);
+                    };
+                } catch (err) {
+                    console.error("Error al acceder a la cámara: ", err);
+                    if(err.name === "NotAllowedError") {
+                        showCameraError("Permiso denegado. Debes permitir el acceso a la cámara en la configuración de tu navegador.");
+                    } else {
+                        showCameraError(`Error de cámara: ${err.name}. ¿Hay otra app usándola?`);
+                    }
+                }
+            }
+            
+            function stopCamera() {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                videoContainer.classList.add('hidden');
+                scanPlaceholder.classList.remove('hidden');
+                cameraScanBtn.classList.remove('hidden');
+                cameraStopBtn.classList.add('hidden');
+            }
+            
+            function tick() {
+                if (!stream) return; 
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    fileScanCanvas.width = video.videoWidth;
+                    fileScanCanvas.height = video.videoHeight;
+                    fileScanCtx.drawImage(video, 0, 0, fileScanCanvas.width, fileScanCanvas.height);
+                    try {
+                        const imageData = fileScanCtx.getImageData(0, 0, fileScanCanvas.width, fileScanCanvas.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: "dontInvert",
+                        });
+                        if (code) {
+                            stopCamera();
+                            updateResult(code.data);
+                            if ('vibrate' in navigator) {
+                                navigator.vibrate(100);
+                            }
+                        }
+                    } catch (err) {
+                        // Ignorar errores transitorios del canvas
+                    }
+                }
+                animationFrameId = requestAnimationFrame(tick);
+            }
+
+            fullscreenResultCloseBtn.addEventListener('click', () => {
+                fullscreenResultOverlay.classList.add('hidden');
+            });
+            
+            fullscreenCopyBtn.addEventListener('click', () => {
+                fullscreenResultText.select();
+                try {
+                    navigator.clipboard.writeText(fullscreenResultText.value);
+                    fullscreenCopyBtn.textContent = '¡Copiado!';
+                } catch (err) {
+                    try {
+                        document.execCommand('copy');
+                        fullscreenCopyBtn.textContent = '¡Copiado!';
+                    } catch (e) {
+                        fullscreenCopyBtn.textContent = 'Error al copiar';
+                    }
+                }
+            });
+
+            fullscreenResultOverlay.addEventListener('click', (e) => {
+                if (e.target === fullscreenResultOverlay) {
+                    fullscreenResultOverlay.classList.add('hidden');
+                }
+            });
+
+        })();
+    </script>
+    
+    <script>
+        (function() {
+            /**
+             * Función helper para mostrar el anuncio de Start.io.
+             * Comprueba si el SDK está cargado antes de intentarlo.
+             */
+            function showStartIoAd() {
+                if (typeof startio !== 'undefined' && typeof startio.showAd === 'function') {
+                    console.log("Mostrando anuncio de Start.io...");
+                    startio.showAd();
+                } else {
+                    console.warn("Start.io SDK no está listo o la función showAd no existe.");
+                }
+            }
+
+            // --- Disparador 1: Cada 3 cargas de la app ---
+            try {
+                const APP_OPEN_KEY = 'qrProAppOpenCount';
+                let openCount = parseInt(localStorage.getItem(APP_OPEN_KEY) || '0', 10);
+                openCount++;
+                
+                // Se mostrará en la 3ra apertura
+                if (openCount >= 3) {
+                    console.log(`App abierta ${openCount} veces. Mostrando anuncio de carga.`);
+                    // Esperar 1.5 segundos para que la app cargue antes de mostrar el anuncio
+                    setTimeout(showStartIoAd, 1500); 
+                    localStorage.setItem(APP_OPEN_KEY, '0'); // Resetear contador
+                } else {
+                    console.log(`App abierta ${openCount} de 3 veces.`);
+                    localStorage.setItem(APP_OPEN_KEY, openCount.toString());
+                }
+            } catch (e) {
+                console.error("Error al procesar el contador de localStorage (anuncios): ", e);
+            }
+
+            // Exponer la función de mostrar anuncio para que otros scripts la usen
+            window.triggerAd = showStartIoAd;
+
+        })();
+    </script>
+</body>
+</html>
